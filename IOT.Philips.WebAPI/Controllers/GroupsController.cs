@@ -20,7 +20,7 @@ namespace IOT.Philips.WebAPI.Controllers
         public void InitializeHue()
         {
             _isInitialized = false;
-            //initialize client with bridge IP and app GUID
+            //initialize client with bridge IP and app GUID for Philips
             _client = new LocalHueClient(BRIDGE_IP);
             _client.Initialize(APP_ID);
             //only working with light #1 in this demo
