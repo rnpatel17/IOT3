@@ -35,12 +35,14 @@ namespace IOT.Philips.WebAPI.Controllers
         public GroupsController()
         {
             InitializeHue();
+            //initialize hue
         }
         public async Task<List<Group>> GetAllGroup()
         {
             if (_isInitialized)
             {
                 var allGroups = await _client.GetGroupsAsync();
+                //get all group details
                 return allGroups.ToList();
             }
             else
@@ -54,8 +56,10 @@ namespace IOT.Philips.WebAPI.Controllers
             if (_isInitialized)
             {
                 var groups = await _client.GetGroupAsync(id);
+                //get group by Id
                 int grpId = Convert.ToInt32(id);
                 var group = db.Group.Find(grpId);
+                //find group object by id from database
                 if (group!=null)
                 {
 
@@ -77,6 +81,7 @@ namespace IOT.Philips.WebAPI.Controllers
             if (_isInitialized)
             {
                 var updateGroups = await _client.UpdateGroupAsync(id,lights);
+                //update group by id and lights
                 return updateGroups;
             }
             else
@@ -90,6 +95,7 @@ namespace IOT.Philips.WebAPI.Controllers
             if (_isInitialized)
             {
                 var createGroups = await _client.CreateGroupAsync(light);
+                //create group with number of light
                 return createGroups;
             }
             else
@@ -103,6 +109,7 @@ namespace IOT.Philips.WebAPI.Controllers
             if (_isInitialized)
             {
                 var sendGroupsCommand = await _client.SendGroupCommandAsync(commandBody);
+                // send send command for group with body
                 return sendGroupsCommand;
             }
             else
@@ -116,6 +123,7 @@ namespace IOT.Philips.WebAPI.Controllers
             if (_isInitialized)
             {
                 var deleteGroups = await _client.DeleteGroupAsync(id);
+                //delete group by id
                 return deleteGroups;
             }
             else

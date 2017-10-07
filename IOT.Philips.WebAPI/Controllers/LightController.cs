@@ -18,65 +18,19 @@ namespace IOT.Philips.WebAPI.Controllers
         IOTDBContext db = new IOTDBContext();
         //command keys for queue
         private const string ON_OFF = "ON_OFF";
-        //private const string BRIGHTNESS = "BRIGHTNESS";
-        //private const string COLOR = "COLOR";
-
+       
         private Dictionary<string, LightCommand> _commandQueue;
-        //DispatcherTimer _timer; //timer for queue
 
         ILocalHueClient _client;
         Light _light;
         List<string> _lightList;
         bool _isInitialized;
-        //protected override async void OnNavigatedTo()
-        //{
-        //    base.OnNavigatedTo();
-
-        //    string appId = "";
-        //    string clientId = "";
-        //    string clientSecret = "";
-
-        //    IRemoteAuthenticationClient authClient = new RemoteAuthenticationClient(clientId, clientSecret, appId);
-
-
-
-        //    var authorizeUri = authClient.BuildAuthorizeUri("sample", "consoleapp");
-        //    var callbackUri = new Uri("https://localhost/q42hueapi");
-
-        //    var webAuthenticationResult = await Windows.Security.Authentication.Web WebAuthenticationBroker.AuthenticateAsync(WebAuthenticationOptions.None, authorizeUri, callbackUri);
-
-        //    if (webAuthenticationResult != null)
-        //    {
-        //        var result = authClient.ProcessAuthorizeResponse(webAuthenticationResult.ResponseData);
-
-        //        if (!string.IsNullOrEmpty(result.Code))
-        //        {
-        //            //You can store the accessToken for later use
-        //            var accessToken = await authClient.GetToken(result.Code);
-
-        //            IRemoteHueClient client = new RemoteHueClient(authClient.GetValidToken);
-        //            var bridges = await client.GetBridgesAsync();
-
-        //            if (bridges != null)
-        //            {
-        //                //Register app
-        //                //var key = await client.RegisterAsync(bridges.First().Id, "Sample App");
-
-        //                //Or initialize with saved key:
-        //                client.Initialize(bridges.First().Id, "C95sK6Cchq2LfbkbVkfpRKSBlns2CylN-VxxDD8F");
-
-        //                //Turn all lights on
-        //                var lightResult = await client.SendCommandAsync(new LightCommand().TurnOn());
-
-        //            }
-        //        }
-        //    }
-        //}
-
+       
         public LightController()
         {
 
-            InitializeHue(); //fire and forget, don't wait on this call// uncomment local
+            InitializeHue(); 
+            //initialize hue
 
             //initialize command queue
             _commandQueue = new Dictionary<string, LightCommand>();
@@ -110,12 +64,16 @@ namespace IOT.Philips.WebAPI.Controllers
                     QueueCommand(ON_OFF, cmd);
 
                     var light = db.Light.Find(id);
+                    //find by Light Id 
                     var state = db.State.Find(light.StateId);
+                    //find by State Id
 
                     if (state != null)
+                        //if state object not equal to null then change state
                     {
                         state.On = IsOn;
                         db.SaveChanges();
+                        //update state in database 
                         // model.TurnOnAction();
                         return state.On;
                     }
@@ -142,6 +100,7 @@ namespace IOT.Philips.WebAPI.Controllers
             if (_isInitialized)
             {
                 var allLight = await _client.GetLightsAsync();
+                //get all lights details
                 return allLight.ToList();
             }
             else
@@ -156,6 +115,7 @@ namespace IOT.Philips.WebAPI.Controllers
             if (_isInitialized)
             {
                 var newLight = await _client.GetNewLightsAsync();
+                //get new Light details
                 return newLight.ToList();
             }
             else
@@ -169,6 +129,7 @@ namespace IOT.Philips.WebAPI.Controllers
             if (_isInitialized)
             {
                 var searchNewLight = await _client.SearchNewLightsAsync();
+                // find new lights
                 return searchNewLight;
             }
             else
@@ -181,6 +142,7 @@ namespace IOT.Philips.WebAPI.Controllers
             if (_isInitialized)
             {
                 var rename = await _client.SetLightNameAsync(id,name);
+                //rename light by light id
                 return rename;
             }
             else
@@ -194,6 +156,7 @@ namespace IOT.Philips.WebAPI.Controllers
             if (_isInitialized)
             {
                 var deleteDefaultHueResult = await _client.DeleteLightAsync(id);
+                // delete light by id
                 return deleteDefaultHueResult.ToList();
             }
             else
