@@ -11,14 +11,24 @@ namespace IOT.Web.Controllers
     {
         public ActionResult Index()
         {
-            LightController light = new LightController();
-            var test=light.OnOff(false,"1");// light number 
+            //LightController light = new LightController();
+            //var test=light.OnOff(false,"1");
+            // light number 
             //light.GetAllLights("test");
            // light.LightOnOff("username", 1,true);
            // light.DeleteLights("test", 7);
             return View();
         }
+        [HttpPost]
+        public ActionResult LightOnOff(string id,bool isOn)
+        {
+            LightController light = new LightController();
 
+            var test =id!=null && id!=string.Empty?light.OnOff(isOn, id): light.OnOff(isOn, null);
+            return Json(test.Result,JsonRequestBehavior.AllowGet);
+        }
+
+        
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";

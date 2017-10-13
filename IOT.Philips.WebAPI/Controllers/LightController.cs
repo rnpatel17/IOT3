@@ -45,13 +45,28 @@ namespace IOT.Philips.WebAPI.Controllers
                 if (_isInitialized)
                 {
                     //_light = await _client.GetLightAsync(id);
-                    _lightList = new List<string>();
-                    _lightList.Add(id);
+                    if (id!=null)
+                    {
+                        _lightList = new List<string>();
+                        _lightList.Add(id);
+                    }
+                    else
+                    {
+                        _lightList = null;
+                    }
                     var command = new LightCommand();
                     command.On = IsOn;
 
                     command.TransitionTime = new TimeSpan(0, 0, 0, 0, 1);
-                   command.TurnOn().SetColor(15);
+                    if (IsOn)
+                    {
+
+                   command.TurnOn();
+                    }
+                    else
+                    {
+                        command.TurnOff();
+                    }
                     command.Alert = Alert.Once;
 
                     //Or start a colorloop
