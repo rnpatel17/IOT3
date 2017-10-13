@@ -1,6 +1,7 @@
 ﻿using IOT.Philips.WebAPI.Models;
 using IOT.Repository;
 using Q42.HueApi;
+using Q42.HueApi.ColorConverters;
 using Q42.HueApi.Interfaces;
 using Q42.HueApi.Models.Groups;
 using System;
@@ -18,58 +19,57 @@ namespace IOT.Philips.WebAPI.Controllers
         IOTDBContext db = new IOTDBContext();
         //command keys for queue
         private const string ON_OFF = "ON_OFF";
-       
-        private Dictionary<string, LightCommand> _commandQueue;
 
-        ILocalHueClient _client;
+        //private Dictionary<string, LightCommand> _commandQueue;
+
+
         Light _light;
         List<string> _lightList;
-        bool _isInitialized;
-       
-        public LightController()
-        {
 
-            InitializeHue(); 
-            //initialize hue
+        //IHueClient hueClient;
+        //public LightController()
+        //{
 
-            //initialize command queue
-            _commandQueue = new Dictionary<string, LightCommand>();
+        //    InitializeHue();
+        //    //initialize hue
 
-        }
-        public void InitializeHue()
-        {
-            _isInitialized = false;
-            //initialize client with bridge IP and app GUID
-            _client = new LocalHueClient(BRIDGE_IP);
-            _client.Initialize(APP_ID);
-            //only working with light #1 in this demo
+        //    //initialize command queue
+        //    //  _commandQueue = new Dictionary<string, LightCommand>();
 
+        //}
 
-
-            _isInitialized = true;
-
-        }
         public async Task<bool> OnOff(bool IsOn, string id)
         {
             try
             {
                 if (_isInitialized)
                 {
-                    _light = await _client.GetLightAsync(id);
-                    _lightList = new List<string>() { id };
-                    _light.State.On = IsOn;
-                    //queue power command
-                    LightCommand cmd = new LightCommand();
-                    cmd.On = IsOn;
-                    QueueCommand(ON_OFF, cmd);
+                    //_light = await _client.GetLightAsync(id);
+                    _lightList = new List<string>();
+                    _lightList.Add(id);
+                    var command = new LightCommand();
+                    command.On = IsOn;
 
-                    var light = db.Light.Find(id);
+                    command.TransitionTime = new TimeSpan(0, 0, 0, 0, 1);
+                   command.TurnOn().SetColor(15);
+                    command.Alert = Alert.Once;
+
+                    //Or start a colorloop
+                    command.Effect = Effect.ColorLoop;
+                    //_light.State.On = IsOn;
+                    //queue power command
+
+                    var test= await _client.SendCommandAsync(command, _lightList);
+                  //var ts= await _client.SendCommandAsync(cmd, _lightList);
+                   
+
+                        var light = db.Light.Find(id);
                     //find by Light Id 
                     var state = db.State.Find(light.StateId);
                     //find by State Id
 
                     if (state != null)
-                        //if state object not equal to null then change state
+                    //if state object not equal to null then change state
                     {
                         state.On = IsOn;
                         db.SaveChanges();
@@ -93,7 +93,7 @@ namespace IOT.Philips.WebAPI.Controllers
 
                 throw e;
             }
-            
+
         }
         public async Task<List<Light>> GetAllLights()
         {
@@ -110,20 +110,29 @@ namespace IOT.Philips.WebAPI.Controllers
 
         }
 
-        public async Task<List<Light>> GetNewLights()
+        //public async Task<List<Light>> GetNewLights()
+        //{
+        //    if (_isInitialized)
+        //    {
+        //        var newLight = await _client.GetNewLightsAsync();
+        //        //get new Light details
+        //        return newLight.ToList();
+        //    }
+        //    else
+        //    {
+        //        return null;
+        //    }
+        //}
+        public void sendCommand(LightCommand command,string id)
         {
-            if (_isInitialized)
+            string data =string.Format("on: {0}",command.On);
+       
+            using (var client = new System.Net.WebClient())
             {
-                var newLight = await _client.GetNewLightsAsync();
-                //get new Light details
-                return newLight.ToList();
+                client.UploadData(BRIDGE_IP+"/lights/"+id+"state", "PUT", null);
             }
-            else
-            {
-                 return null;
-            }
+            // var test = _client.SendCommandAsync(command, lightList);
         }
-
         public async Task<HueResults> SearchForNewLights()
         {
             if (_isInitialized)
@@ -137,11 +146,11 @@ namespace IOT.Philips.WebAPI.Controllers
                 return null;
             }
         }
-        public async Task<HueResults> SetLightName(string id,string name)
+        public async Task<HueResults> SetLightName(string id, string name)
         {
             if (_isInitialized)
             {
-                var rename = await _client.SetLightNameAsync(id,name);
+                var rename = await _client.SetLightNameAsync(id, name);
                 //rename light by light id
                 return rename;
             }
@@ -168,15 +177,15 @@ namespace IOT.Philips.WebAPI.Controllers
 
         private void QueueCommand(string commandType, LightCommand cmd)
         {
-            if (_commandQueue.ContainsKey(commandType))
-            {
-                //replace with most recent
-                _commandQueue[commandType] = cmd;
-            }
-            else
-            {
-                _commandQueue.Add(commandType, cmd);
-            }
+            //if (_commandQueue.ContainsKey(commandType))
+            //{
+            //    //replace with most recent
+            //    _commandQueue[commandType] = cmd;
+            //}
+            //else
+            //{
+            //    _commandQueue.Add(commandType, cmd);
+            //}
 
         }
     }

@@ -12,7 +12,7 @@ namespace IOT.Web.Controllers
         public ActionResult Index()
         {
             LightController light = new LightController();
-            //light.OnOff(true,"1");
+            var test=light.OnOff(false,"1");// light number 
             //light.GetAllLights("test");
            // light.LightOnOff("username", 1,true);
            // light.DeleteLights("test", 7);

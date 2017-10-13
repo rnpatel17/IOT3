@@ -18,27 +18,27 @@ namespace IOT.Philips.WebAPI.Controllers
         IOTDBContext db = new IOTDBContext();
         //command keys for queue
 
-        ILocalHueClient _client;
-        bool _isInitialized;
+        //ILocalHueClient _client;
+        //bool _isInitialized;
 
-        public ScenesController()
-        {
+        //public ScenesController()
+        //{
 
-            InitializeHue();
-            //initialize hue
+        //    InitializeHue();
+        //    //initialize hue
 
 
-        }
-        public void InitializeHue()
-        {
-            _isInitialized = false;
-            //initialize client with bridge IP and app GUID
-            _client = new LocalHueClient(BRIDGE_IP);
-            _client.Initialize(APP_ID);
-            //only working with light #1 in this demo
-            _isInitialized = true;
+        //}
+        //public void InitializeHue()
+        //{
+        //    _isInitialized = false;
+        //    //initialize client with bridge IP and app GUID
+        //    _client = new LocalHueClient(BRIDGE_IP);
+        //    _client.Initialize(APP_ID);
+        //    //only working with light #1 in this demo
+        //    _isInitialized = true;
 
-        }
+        //}
         public async Task<List<Scene>> GetAllScene()
         {
             if (_isInitialized)

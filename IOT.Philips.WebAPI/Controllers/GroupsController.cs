@@ -15,28 +15,28 @@ namespace IOT.Philips.WebAPI.Controllers
     public class GroupsController : BaseController
     {
         IOTDBContext db = new IOTDBContext();
-        ILocalHueClient _client;
-        bool _isInitialized;
-        public void InitializeHue()
-        {
-            _isInitialized = false;
-            //initialize client with bridge IP and app GUID for Philips
-            _client = new LocalHueClient(BRIDGE_IP);
-            _client.Initialize(APP_ID);
-            //only working with light #1 in this demo
+        //ILocalHueClient _client;
+        //bool _isInitialized;
+        //public void InitializeHue()
+        //{
+        //    _isInitialized = false;
+        //    //initialize client with bridge IP and app GUID for Philips
+        //    _client = new LocalHueClient(BRIDGE_IP);
+        //    _client.Initialize(APP_ID);
+        //    //only working with light #1 in this demo
 
 
 
-            _isInitialized = true;
+        //    _isInitialized = true;
 
-        }
+        //}
         
 
-        public GroupsController()
-        {
-            InitializeHue();
-            //initialize hue
-        }
+        //public GroupsController()
+        //{
+        //    InitializeHue();
+        //    //initialize hue
+        //}
         public async Task<List<Group>> GetAllGroup()
         {
             if (_isInitialized)
